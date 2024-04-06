@@ -6,6 +6,8 @@ const App = () => {
   const [isLoading, setLoading] = useState(false);
   const [songData, setSongData] = useState([]);
   const [option, setOption] = useState("select");
+  const [genreOption, setGenreOption] = useState()
+
 
   function validateInput(event) {
     var regex = /^\d*\.?\d*$/;
@@ -15,6 +17,21 @@ const App = () => {
         .replace(/(\..*)\./g, "$1");
     }
   }
+
+  const fetchGenre = (genre) => {
+    setLoading(true);
+    setFormSubmitted(true)
+    fetch("http://localhost:8000/genre", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(genre),
+    })
+      .then((response) => response.json())
+      .then((genreData) => {
+        setSongData(genreData);
+        setLoading(false);
+      });
+  };
 
   function validateInputNegative(event) {
     var regex = /^-?\d*\.?\d*$/;
@@ -92,9 +109,21 @@ const App = () => {
     fetchDataByValue(allFormData);
   };
 
+  const handleGenreSubmit = (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.target)
+    const genre_name = formData.get('genreOption')
+    fetchGenre(genre_name)
+
+  }
+
   const handleSelectChange = (event) => {
     setOption(event.target.value);
   };
+
+  const handleGenreChange = (event) => {
+    setGenreOption(event.target.value)
+  }
 
   const renderContent = () => {
     switch (option) {
@@ -142,9 +171,9 @@ const App = () => {
                   type="number"
                   required
                   name="danceability"
-                  min={0.0}
-                  max={1.0}
-                  step={0.1}
+                  min={0.000}
+                  max={1.000}
+                  step={0.001}
                   onInput={validateInput}
                   className="input input-sm focus:outline-1 max-sm:text-xs input-primary text-primary placeholder:text-primary"
                   placeholder="Danceability (0.0 to 1.0)"
@@ -153,9 +182,9 @@ const App = () => {
                   type="number"
                   required
                   name="energy"
-                  min={0.0}
-                  max={1.0}
-                  step={0.1}
+                  min={0.000}
+                  max={1.000}
+                  step={0.001}
                   onInput={validateInput}
                   className="input input-sm focus:outline-1 max-sm:text-xs input-primary text-primary placeholder:text-primary"
                   placeholder="Energy (0.0 to 1.0)"
@@ -166,7 +195,7 @@ const App = () => {
                   name="loudness"
                   min={-49.5}
                   max={4.5}
-                  step={0.1}
+                  step={0.001}
                   onInput={validateInputNegative}
                   className="input input-sm focus:outline-1 max-sm:text-xs input-primary text-primary placeholder:text-primary"
                   placeholder="Loudness(dB) (-49.5 to 4.5)"
@@ -176,9 +205,9 @@ const App = () => {
                   required
                   name="speechiness"
                   onInput={validateInput}
-                  min={0.0}
-                  max={1.0}
-                  step={0.1}
+                  min={0.000}
+                  max={1.000}
+                  step={0.001}
                   className="input input-sm focus:outline-1 max-sm:text-xs input-primary text-primary placeholder:text-primary"
                   placeholder="Speechiness (0.0 to 1.0)"
                 />
@@ -187,9 +216,9 @@ const App = () => {
                   required
                   name="acousticness"
                   onInput={validateInput}
-                  min={0.0}
-                  max={1.0}
-                  step={0.1}
+                  min={0.000}
+                  max={1.000}
+                  step={0.001}
                   className="input input-sm focus:outline-1 max-sm:text-xs input-primary text-primary placeholder:text-primary"
                   placeholder="Acousticness (0.0 to 1.0)"
                 />
@@ -198,9 +227,9 @@ const App = () => {
                   required
                   name="instrumentalness"
                   onInput={validateInput}
-                  min={0.0}
-                  max={1.0}
-                  step={0.1}
+                  min={0.000}
+                  max={1.000}
+                  step={0.001}
                   className="input input-sm focus:outline-1 max-sm:text-xs input-primary text-primary placeholder:text-primary"
                   placeholder="Instrumentalness (0.0 to 1.0)"
                 />
@@ -209,9 +238,9 @@ const App = () => {
                   required
                   name="liveness"
                   onInput={validateInput}
-                  min={0.0}
-                  max={1.0}
-                  step={0.1}
+                  min={0.000}
+                  max={1.000}
+                  step={0.001}
                   className="input input-sm focus:outline-1 max-sm:text-xs input-primary text-primary placeholder:text-primary"
                   placeholder="Liveness (0.0 to 1.0)"
                 />
@@ -220,9 +249,9 @@ const App = () => {
                   required
                   name="valence"
                   onInput={validateInput}
-                  min={0.0}
-                  max={1.0}
-                  step={0.1}
+                  min={0.000}
+                  max={1.000}
+                  step={0.001}
                   className="input input-sm focus:outline-1 max-sm:text-xs input-primary text-primary placeholder:text-primary"
                   placeholder="Valence (0.0 to 1.0)"
                 />
@@ -237,6 +266,57 @@ const App = () => {
                 </button>
               </form>
             </div>
+          </div>
+        );
+      case "genre":
+        const genres = ['acoustic', 'afrobeat', 'alt-rock', 'alternative', 'ambient',
+        'anime', 'black-metal', 'bluegrass', 'blues', 'brazil',
+        'breakbeat', 'british', 'cantopop', 'chicago-house', 'children',
+        'chill', 'classical', 'club', 'comedy', 'country', 'dance',
+        'dancehall', 'death-metal', 'deep-house', 'detroit-techno',
+        'disco', 'disney', 'drum-and-bass', 'dub', 'dubstep', 'edm',
+        'electro', 'electronic', 'emo', 'folk', 'forro', 'french', 'funk',
+        'garage', 'german', 'gospel', 'goth', 'grindcore', 'groove',
+        'grunge', 'guitar', 'happy', 'hard-rock', 'hardcore', 'hardstyle',
+        'heavy-metal', 'hip-hop', 'honky-tonk', 'house', 'idm', 'indian',
+        'indie-pop', 'indie', 'industrial', 'iranian', 'j-dance', 'j-idol',
+        'j-pop', 'j-rock', 'jazz', 'k-pop', 'kids', 'latin', 'latino',
+        'malay', 'mandopop', 'metal', 'metalcore', 'minimal-techno', 'mpb',
+        'new-age', 'opera', 'pagode', 'party', 'piano', 'pop-film', 'pop',
+        'power-pop', 'progressive-house', 'psych-rock', 'punk-rock',
+        'punk', 'r-n-b', 'reggae', 'reggaeton', 'rock-n-roll', 'rock',
+        'rockabilly', 'romance', 'sad', 'salsa', 'samba', 'sertanejo',
+        'show-tunes', 'singer-songwriter', 'ska', 'sleep', 'soul',
+        'spanish', 'study', 'swedish', 'synth-pop', 'tango', 'techno',
+        'trance', 'trip-hop', 'turkish', 'world-music']
+        return (
+          <div className="w-full mb-3">
+            <form
+              onSubmit={handleGenreSubmit}
+              className="flex gap-4"
+              action=""
+              method="post"
+            >
+              <select
+                value={genreOption}
+                onChange={handleGenreChange}
+                className="select select-primary w-full"
+                name="genreOption"
+                id=""
+              >
+                <option disabled defaultValue={true}>
+                  --select--
+                </option>
+                {genres.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+              <button className="btn btn-primary " type="submit">
+                Search
+              </button>
+            </form>
           </div>
         );
     }
@@ -267,6 +347,7 @@ const App = () => {
             </option>
             <option value="song">Based on Song</option>
             <option value="value">Based on Values</option>
+            <option value="genre">Based on Genre</option>
           </select>
           <div className="w-full h-full flex items-center">
           <h1 className="text-ellipsis font-medium">This System is capable to recommend songs by their <span className="text-secondary">name</span> or <span className="text-secondary">music properties</span> (values)</h1>
